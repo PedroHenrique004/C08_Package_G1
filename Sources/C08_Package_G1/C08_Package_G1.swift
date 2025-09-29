@@ -61,7 +61,7 @@ public class PetClassifier {
 
                 print("\n---------------------------------")
                 print("Resultado da Análise do Pacote:")
-                print("   - \(isPet ? "✅ É um Pet!" : "❌ Não é um Pet.")")
+                print("   - \(isPet ? "É um Pet!" : "Não é um Pet.")")
                 print("   - Label Detectada: '\(classification.label)'")
                 print("   - Confiança: \(classification.confidencePercentage)")
                 print("---------------------------------")
@@ -73,7 +73,7 @@ public class PetClassifier {
             do {
                 try VNImageRequestHandler(cgImage: cgImage).perform([request])
             } catch {
-                print("🚨 Falha ao executar a requisição do Vision: \(error.localizedDescription)")
+                print("Falha ao executar a requisição do Vision: \(error.localizedDescription)")
                 continuation.resume(returning: false)
             }
         }
