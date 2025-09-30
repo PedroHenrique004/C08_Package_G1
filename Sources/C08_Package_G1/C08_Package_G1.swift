@@ -25,7 +25,7 @@ public class PetClassifier {
     private static let sharedModel: VNCoreMLModel = {
         do {
             let configuracao = MLModelConfiguration()
-            let modelo = try PetClassifierModel(configuration: configuracao).model
+            let modelo = try PetDetector(configuration: configuracao).model
             return try VNCoreMLModel(for: modelo)
         } catch {
             fatalError("Falha crítica ao carregar o modelo de Core ML: \(error)")
@@ -34,11 +34,11 @@ public class PetClassifier {
     
     /// Analisa uma imagem para determinar se ela contém um pet. É a única função que você precisa chamar.
     /// Exemplo de uso: `let isPet = await PetClassifier.analyze(image: suaImagem)`
-    public static func analyze(image: UIImage?) async -> Bool {
+    public static func analyze(image: UIImage?) async -> String {
         // Valida e converte a UIImage para CGImage em um único passo.
         guard let cgImage = image?.cgImage else {
             print("Nenhuma imagem válida fornecida para análise.")
-            return false
+            return ""
         }
         
         // Converte a lógica de completion handler do Vision para o moderno async/await.
@@ -49,22 +49,23 @@ public class PetClassifier {
                 guard let results = request.results as? [VNClassificationObservation],
                       let bestResult = results.first, error == nil else {
                     print("🚨 Erro ou nenhum resultado retornado pela análise: \(error?.localizedDescription ?? "N/A")")
-                    continuation.resume(returning: false)
+                    continuation.resume(returning: "")
                     return
                 }
                 
                 // Processa o melhor resultado.
-                let isPet = bestResult.identifier == "pets"
+                let isPet = bestResult.identifier
+                print(isPet)
                 
                 // Cria uma instância da nossa struct para usar a formatação da porcentagem.
                 let classification = Classification(label: bestResult.identifier, confidence: bestResult.confidence)
 
-                print("\n---------------------------------")
-                print("Resultado da Análise do Pacote:")
-                print("   - \(isPet ? "É um Pet!" : "Não é um Pet.")")
-                print("   - Label Detectada: '\(classification.label)'")
-                print("   - Confiança: \(classification.confidencePercentage)")
-                print("---------------------------------")
+//                print("\n---------------------------------")
+//                print("Resultado da Análise do Pacote:")
+//                print("   - \(isPet ? "É um Pet!" : "Não é um Pet.")")
+//                print("   - Label Detectada: '\(classification.label)'")
+//                print("   - Confiança: \(classification.confidencePercentage)")
+//                print("---------------------------------")
                 continuation.resume(returning: isPet)
             }
             request.imageCropAndScaleOption = .centerCrop
@@ -74,7 +75,7 @@ public class PetClassifier {
                 try VNImageRequestHandler(cgImage: cgImage).perform([request])
             } catch {
                 print("Falha ao executar a requisição do Vision: \(error.localizedDescription)")
-                continuation.resume(returning: false)
+                continuation.resume(returning: "")
             }
         }
     }
