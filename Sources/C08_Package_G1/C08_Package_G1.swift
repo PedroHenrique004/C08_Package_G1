@@ -22,7 +22,7 @@ public enum ClassifierError: Error {
 /// A classe principal para interagir com o modelo de classificação de pets.
 public class PetClassifier {
     // O modelo de Core ML é carregado uma única vez e compartilhado por todas as chamadas.
-    private static let sharedModel: VNCoreMLModel = {
+    private static let petDetector: VNCoreMLModel = {
         do {
             let configuracao = MLModelConfiguration()
             let modelo = try PetDetector(configuration: configuracao).model
@@ -32,9 +32,28 @@ public class PetClassifier {
         }
     }()
     
+    private static let petClassifierModel: VNCoreMLModel = {
+        do {
+            let configuracao = MLModelConfiguration()
+            let modelo = try PetClassifierModel(configuration: configuracao).model
+            return try VNCoreMLModel(for: modelo)
+        } catch {
+            fatalError("Falha crítica ao carregar o modelo de Core ML: \(error)")
+        }
+    }()
+    
     /// Analisa uma imagem para determinar se ela contém um pet. É a única função que você precisa chamar.
     /// Exemplo de uso: `let isPet = await PetClassifier.analyze(image: suaImagem)`
-    public static func analyze(image: UIImage?) async -> String {
+    public static func analyze(image: UIImage?, isPet: Bool) async -> String {
+        
+        var model: VNCoreMLModel
+        
+        if isPet {
+            model = petDetector
+        } else {
+            model = petClassifierModel
+        }
+        
         // Valida e converte a UIImage para CGImage em um único passo.
         guard let cgImage = image?.cgImage else {
             print("Nenhuma imagem válida fornecida para análise.")
@@ -44,7 +63,7 @@ public class PetClassifier {
         // Converte a lógica de completion handler do Vision para o moderno async/await.
         return await withCheckedContinuation { continuation in
             // Cria e configura a requisição de análise.
-            let request = VNCoreMLRequest(model: sharedModel) { request, error in
+            let request = VNCoreMLRequest(model: model) { request, error in
                 // Após a análise, verifica os resultados.
                 guard let results = request.results as? [VNClassificationObservation],
                       let bestResult = results.first, error == nil else {
@@ -55,17 +74,10 @@ public class PetClassifier {
                 
                 // Processa o melhor resultado.
                 let isPet = bestResult.identifier
-                print(isPet)
                 
                 // Cria uma instância da nossa struct para usar a formatação da porcentagem.
                 let classification = Classification(label: bestResult.identifier, confidence: bestResult.confidence)
 
-//                print("\n---------------------------------")
-//                print("Resultado da Análise do Pacote:")
-//                print("   - \(isPet ? "É um Pet!" : "Não é um Pet.")")
-//                print("   - Label Detectada: '\(classification.label)'")
-//                print("   - Confiança: \(classification.confidencePercentage)")
-//                print("---------------------------------")
                 continuation.resume(returning: isPet)
             }
             request.imageCropAndScaleOption = .centerCrop
