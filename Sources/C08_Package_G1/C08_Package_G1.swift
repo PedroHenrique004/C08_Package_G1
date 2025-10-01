@@ -44,7 +44,7 @@ public class PetClassifier {
     
     /// Analisa uma imagem para determinar se ela contém um pet. É a única função que você precisa chamar.
     /// Exemplo de uso: `let isPet = await PetClassifier.analyze(image: suaImagem)`
-    public static func analyze(image: UIImage?, isPet: Bool) async -> String {
+     static func analyze(image: UIImage?, isPet: Bool) async -> String {
         
         var model: VNCoreMLModel
         
