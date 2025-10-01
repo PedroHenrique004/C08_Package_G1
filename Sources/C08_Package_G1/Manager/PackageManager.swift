@@ -16,11 +16,16 @@ public struct PackageManager {
     
     public func analisar(image: UIImage?) async -> ResponseAnalyze {
         
-    let tipo = await PetClassifier.analyze(image: image, isPet: false)
-    let nome = await PetClassifier.analyze(image: image, isPet: true)
+        let tipo = await PetClassifier.analyze(image: image, isPet: false)
         
-    let response: ResponseAnalyze = ResponseAnalyze(name: nome, isPet: tipo == "pet" ? true : false)
+        guard tipo == "pets" else {
+            return ResponseAnalyze(name: "Não Domestico", isPet: false)
+        }
         
-    return response
+        let nome = await PetClassifier.analyze(image: image, isPet: true)
+        
+        let response: ResponseAnalyze = ResponseAnalyze(name: nome, isPet: tipo == "pets" ? true : false)
+        
+        return response
     }
 }
