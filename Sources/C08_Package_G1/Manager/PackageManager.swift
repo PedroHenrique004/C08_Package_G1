@@ -14,7 +14,7 @@ public struct PackageManager {
         
     }
     
-    func analisar(image: UIImage?) async -> ResponseAnalyze {
+    public func analisar(image: UIImage?) async -> ResponseAnalyze {
         
     let tipo = await PetClassifier.analyze(image: image, isPet: false)
     let nome = await PetClassifier.analyze(image: image, isPet: true)
