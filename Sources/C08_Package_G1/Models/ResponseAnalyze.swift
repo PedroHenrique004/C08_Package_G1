@@ -6,7 +6,8 @@
 //
 
 import Foundation
-
+///`ResponseAnalyze` Modelo utilizado para retorno
+///da função `analisar` do `PackageManager`
 public struct ResponseAnalyze {
     public let name: String
     public let isPet: Bool

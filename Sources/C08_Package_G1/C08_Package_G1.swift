@@ -45,7 +45,9 @@ public class PetClassifier {
     /// Analisa uma imagem para determinar se ela contém um pet. É a única função que você precisa chamar.
     /// Exemplo de uso: `let isPet = await PetClassifier.analyze(image: suaImagem)`
      static func analyze(image: UIImage?, isPet: Bool) async -> String {
-        
+        /// Seleciona qual modelo de Core ML será usado na análise.
+        /// - Se `isPet` for verdadeiro, utiliza o `petDetector` para verificar se a imagem contém um pet.
+        /// - Caso contrário, utiliza o `petClassifierModel` para identificar qual tipo de pet é.
         var model: VNCoreMLModel
         
         if isPet {
