@@ -9,6 +9,11 @@ import Foundation
 import UIKit
 
 public struct PackageManager {
+    
+    public init(){
+        
+    }
+    
     func analisar(image: UIImage?) async -> ResponseAnalyze {
         
     let tipo = await PetClassifier.analyze(image: image, isPet: false)
