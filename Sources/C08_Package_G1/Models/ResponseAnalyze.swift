@@ -8,6 +8,6 @@
 import Foundation
 
 public struct ResponseAnalyze {
-    let name: String
-    let isPet: Bool
+    public let name: String
+    public let isPet: Bool
 }
